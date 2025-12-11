@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biaya Simaksi Gunung Jawa</title>
+
+    <style>
+        /* ==== STYLE GLOBAL ==== */
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #f3f7f0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=60");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 80px 20px;
+            color: white;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 45px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
+        }
+
+        header p {
+            font-size: 18px;
+        }
+
+        /* ==== SEARCH BAR ==== */
+        .container {
+            width: 90%;
+            margin: auto;
+            margin-top: -40px;
+        }
+
+        #search {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
+            border: none;
+            font-size: 17px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            outline: none;
+        }
+
+        /* ==== GRID ==== */
+        .grid {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            animation: fadeIn 0.8s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            color: #2e5e2e;
+        }
+
+        .lokasi {
+            font-size: 15px;
+            color: #666;
+        }
+
+        .price {
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1f7a1f;
+        }
+
+        /* ==== POPUP ==== */
+        .popup-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .popup-box {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 15px;
+            padding: 25px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .popup-box h2 {
+            margin-top: 0;
+            color: #1f5f1f;
+        }
+
+        .popup-box label {
+            font-size: 14px;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .popup-box input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #aaa;
+        }
+
+        .popup-box button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: green;
+            color: white;
+            border: none;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .popup-box button:hover {
+            background: #0c6e0c;
+        }
+
+        .close-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding: 15px;
+            background: #2e2e2e;
+            color: white;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+</head>
+<body>
+
+<header>
+    <h1>Biaya Simaksi Gunung di Pulau Jawa</h1>
+    <p>Informasi pendakian, biaya simaksi, dan lokasi gunung-gunung favorit di Pulau Jawa.</p>
+</header>
+
+<div class="container">
+    <input type="text" id="search" placeholder="Cari gunung atau lokasi..." onkeyup="searchGunung()">
+
+    <div id="gunungList" class="grid"></div>
+</div>
+
+<footer>
+    © 2025 Simaksi Jawa — Informasi Pendakian Indonesia
+</footer>
+
+<!-- ==== POPUP DETAIL + BOOKING ==== -->
+<div class="popup-bg" id="popup">
+    <div class="popup-box">
+        <h2 id="detailNama"></h2>
+        <p id="detailLokasi"></p>
+        <p id="detailHarga"></p>
+
+        <h3>Booking Tiket</h3>
+
+        <label>Nama Pemesan</label>
+        <input type="text" id="formNama">
+
+        <label>Hari</label>
+        <input type="text" id="formHari">
+
+        <label>Tanggal</label>
+        <input type="date" id="formTanggal">
+
+        <label>Jumlah Rombongan</label>
+        <input type="number" id="formJumlah">
+
+        <button onclick="konfirmasi()">Kirim Booking</button>
+        <button class="close-btn" onclick="closePopup()">Tutup</button>
+    </div>
+</div>
+
+<script>
+    // DATA SIMAKSI
+    const gunungData = [
+        { nama: "Gunung Semeru", biaya: 19000, lokasi: "Jawa Timur" },
+        { nama: "Gunung Lawu", biaya: 15000, lokasi: "Jawa Tengah" },
+        { nama: "Gunung Merbabu", biaya: 15000, lokasi: "Jawa Tengah" },
+        { nama: "Gunung Merapi", biaya: 15000, lokasi: "Jawa Tengah" },
+        { nama: "Gunung Ciremai", biaya: 20000, lokasi: "Jawa Barat" },
+        { nama: "Gunung Prau", biaya: 15000, lokasi: "Jawa Tengah" },
+        { nama: "Gunung Sindoro", biaya: 20000, lokasi: "Jawa Tengah" },
+        { nama: "Gunung Sumbing", biaya: 20000, lokasi: "Jawa Tengah" },
+        { nama: "Gunung Gede Pangrango", biaya: 29000, lokasi: "Jawa Barat" }
+    ];
+
+    const list = document.getElementById("gunungList");
+
+    function renderData(data) {
+        list.innerHTML = "";
+        data.forEach(g => {
+            list.innerHTML += `
+                <div class="card" onclick="openPopup('${g.nama}', '${g.lokasi}', ${g.biaya})">
+                    <h3>${g.nama}</h3>
+                    <p class="lokasi">📍 ${g.lokasi}</p>
+                    <p class="price">Biaya Simaksi: Rp ${g.biaya.toLocaleString()}</p>
+                </div>
+            `;
+        });
+    }
+
+    renderData(gunungData);
+
+    function searchGunung() {
+        const keyword = document.getElementById("search").value.toLowerCase();
+        const hasil = gunungData.filter(g =>
+            g.nama.toLowerCase().includes(keyword) ||
+            g.lokasi.toLowerCase().includes(keyword)
+        );
+        renderData(hasil);
+    }
+
+    // ==== POPUP HANDLER ====
+    function openPopup(nama, lokasi, biaya) {
+        document.getElementById("detailNama").textContent = nama;
+        document.getElementById("detailLokasi").textContent = "📍 Lokasi: " + lokasi;
+        document.getElementById("detailHarga").textContent = "💰 Biaya Simaksi: Rp " + biaya.toLocaleString();
+
+        document.getElementById("popup").style.display = "flex";
+    }
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+
+    function konfirmasi() {
+<script>
+const sheetURL = https://docs.google.com/spreadsheets/d/1CEZSnLbxUc7SJ6tzAKyfMGUN0f0N_eRFBjmS3X1fmMg/edit?usp=sharing; // dari Apps Script
+
+function konfirmasi() {
+    const nama = document.getElementById("formNama").value;
+    const hari = document.getElementById("formHari").value;
+    const tanggal = document.getElementById("formTanggal").value;
+    const jumlah = document.getElementById("formJumlah").value;
+
+    if (!nama || !hari || !tanggal || !jumlah) {
+        alert("Harap isi semua data!");
+        return;
+    }
+
+    // Kirim data ke Google Sheet via Apps Script
+    fetch(sheetURL, {
+        method: "POST",
+        body: JSON.stringify({nama, hari, tanggal, jumlah}),
+        headers: {"Content-Type": "application/json"}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.result === "success"){
+            alert("Booking berhasil! Data tersimpan di Google Sheet.");
+            closePopup();
+        } else {
+            alert("Terjadi kesalahan, coba lagi.");
+        }
+    })
+    .catch(err => {
+        alert("Terjadi kesalahan, coba lagi.");
+        console.log(err);
+    });
+}
+</script>
+
+</body>
+</html>
